@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- This page is constructed based on the siteTemplate -->
+    <ui:composition template="/template/siteTemplate.xhtml">
+        <ui:define name="title">
+            <!-- Set the page title -->
+            <h:outputText value="Country Flags Carousel" />
+        </ui:define>
+        
+        <!-- Create the content for this page below -->
+        <ui:define name="editableContent">
+            <div id="posterFrame" align="center" >
+                <h1>Country Flags Carousel</h1>
+                <p:carousel value="#{countryController.listOfCountries}" var="aCountry">
+                    <p:graphicImage url="https://flagcdn.com/#{countryController.countryCodeInLowerCase(aCountry.cca2)}.svg" width="60%"/>
+                    <br /><br />
+                    <h:outputText value="#{aCountry.nameCommon}" />
+                </p:carousel>
+                <!-- Notes:
+                – The Carousel displays Indicators on the bottom. Indicators are buttons with rectangle images.
+                  Clicking an Indicator button displays its flag.
+                – Large vertical empty space is shown between the flag image and the Indicators. This is because
+                  Switzerland flag is a square for which vertical empty space is displayed.
+                -->
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

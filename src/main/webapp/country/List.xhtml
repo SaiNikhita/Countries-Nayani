@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="jakarta.tags.core">
+
+    <!-- This page is constructed based on the siteTemplate -->
+    <ui:composition template="/template/siteTemplate.xhtml">
+        <ui:define name="title">
+            <!-- Set the page title -->
+            <h:outputText value="Favorite Countries" />
+        </ui:define>
+
+        <!-- Create the content for this page below -->
+        <ui:define name="editableContent">
+
+            <!-- In case of JSF validation error, set 'selected' to null in countryController -->
+            <c:if test="#{facesContext.validationFailed}">
+                ${countryController.unselect()}
+            </c:if>
+
+            <!-- Set 'selected' to null in countryController when the user refreshes / reloads this JSF page -->
+            <f:metadata>
+                <f:viewAction action="#{countryController.unselect()}" rendered="#{facesContext.postback}" />
+            </f:metadata>
+
+            <div align="center">
+                <h:form id="CountryListForm">
+                    <p:panel header="List of Favorite Countries">
+                        <p:dataTable id="datalist"
+                                     value="#{countryController.listOfCountries}"
+                                     var="aCountry"
+                                     widgetVar="countriesDataTable"
+                                     selectionMode="single"
+                                     selection="#{countryController.selected}"
+                                     reflow="true"
+                                     showGridlines="true"
+                                     paginator="true"
+                                     rowKey="#{aCountry.id}"
+                                     rows="10"
+                                     rowsPerPageTemplate="5,10,20,30,50,70,90"
+                                     emptyMessage="No country found for the search query entered!" >
+
+                            <p:ajax event="rowSelect"   update="createButton viewButton editButton deleteButton flagButton mapButton"/>
+                            <p:ajax event="rowUnselect" update="createButton viewButton editButton deleteButton flagButton mapButton"/>
+
+                            <!--
+                            *************************
+                            *   Data Table Header   *
+                            *************************
+                            -->
+                            <f:facet name="header">
+                                <div align="center">
+                                    <p:inputText id="globalFilter" onkeyup="PF('countriesDataTable').filter()" filterMatchMode="contains"
+                                                 style="width: 250px"
+                                                 placeholder="Enter Global Search Query" />
+                                    &nbsp;
+                                    <p:commandButton type="button" value="Clear All Filters" styleClass="ui-button-outlined"
+                                                     icon="fas fa-undo" onclick="PF('countriesDataTable').clearFilters()" />
+                                </div>
+                            </f:facet>
+
+                            <!--
+                            *********************
+                            *    Country Name   *
+                            *********************
+                            -->
+                            <p:column headerText="Name" sortBy="#{aCountry.nameCommon}"
+                                      filterBy="#{aCountry.nameCommon}" filterMatchMode="contains"
+                                      style="vertical-align: top">
+                                <h:outputText value="#{aCountry.nameCommon}"/>
+                            </p:column>
+
+                            <!--
+                            *********************
+                            *    Country Flag   *
+                            *********************
+                            Country code must be in lower case for the flag URL
+                            -->
+                            <p:column headerText="Flag" style="width: 60px; text-align: center; vertical-align: top">
+                                <img src="https://flagcdn.com/#{countryController.countryCodeInLowerCase(aCountry.cca2)}.svg"
+                                     alt="Country Flag" width="60px" />
+                            </p:column>
+
+                            <!--
+                            ******************************
+                            *    Country 2-letter Code   *
+                            ******************************
+                            -->
+                            <p:column headerText="Code" sortBy="#{aCountry.cca2}"
+                                      filterBy="#{aCountry.cca2}" filterMatchMode="contains"
+                                      style="width: 80px; text-align: center; vertical-align: top">
+                                <h:outputText value="#{aCountry.cca2}"/>
+                            </p:column>
+
+                            <!--
+                            *********************
+                            *    Capital City   *
+                            *********************
+                            -->
+                            <p:column headerText="Capital City" sortBy="#{aCountry.capitalCity}"
+                                      filterBy="#{aCountry.capitalCity}" filterMatchMode="contains"
+                                      style="vertical-align: top">
+                                <h:outputText value="#{aCountry.capitalCity}"/>
+                            </p:column>
+
+                            <!--
+                            ***************************
+                            *    Country Population   *
+                            ***************************
+                            -->
+                            <p:column headerText="Population" sortBy="#{aCountry.population}"
+                                      style="text-align: right; vertical-align: top">
+                                <h:outputText value="#{aCountry.population}">
+                                    <!-- Insert commas into population number as thousand separators -->
+                                    <f:convertNumber type="number" groupingUsed="true" />
+                                </h:outputText>
+                            </p:column>
+
+                            <!--
+                            ***************************
+                            *    Country Total Area   *
+                            ***************************
+                            The total area is the sum of all land and inland water bodies (lakes, reservoirs, rivers).
+                            -->
+                            <p:column headerText="Total Area in km2" sortBy="#{aCountry.totalArea}"
+                                      style="text-align: right; vertical-align: top">
+                                <h:outputText value="#{aCountry.totalArea}">
+                                    <!-- Insert commas into total area number as thousand separators -->
+                                    <f:convertNumber type="number" groupingUsed="true" />
+                                </h:outputText>
+                            </p:column>
+
+                            <!--
+                            ******************************
+                            *    Country Main Language   *
+                            ******************************
+                            -->
+                            <p:column headerText="Language" sortBy="#{aCountry.language}"
+                                      filterBy="#{aCountry.language}" filterMatchMode="contains"
+                                      style="vertical-align: top">
+                                <h:outputText value="#{aCountry.language}"/>
+                            </p:column>
+
+                            <!--
+                            *************************
+                            *    Country Currency   *
+                            *************************
+                            -->
+                            <p:column headerText="Currency" sortBy="#{aCountry.currency}"
+                                      filterBy="#{aCountry.currency}" filterMatchMode="contains"
+                                      style="vertical-align: top">
+                                <h:outputText value="#{aCountry.currency}"/>
+                            </p:column>
+
+                            <!--
+                            *************************
+                            *    Country Latitude   *
+                            *************************
+                            -->
+                            <p:column headerText="Latitude" style="text-align: left; vertical-align: top">
+                                <h:outputText value="#{aCountry.latitude}"/>
+                            </p:column>
+
+                            <!--
+                            **************************
+                            *    Country Longitude   *
+                            **************************
+                            -->
+                            <p:column headerText="Longitude" style="text-align: left; vertical-align: top">
+                                <h:outputText value="#{aCountry.longitude}"/>
+                            </p:column>
+
+                            <!--
+                            *************************
+                            *   Data Table Footer   *
+                            *************************
+                            -->
+                            <f:facet name="footer">
+                                <div align="center">
+                                    <!-- CREATE button: id is used since it is referenced to be activated or deactivated -->
+                                    <p:commandButton id="createButton" value="Create" icon="fas fa-plus" styleClass="rounded-button"
+                                                     actionListener="#{countryController.prepareCreate()}"
+                                                     update=":CountryCreateForm" oncomplete="PF('CountryCreateDialog').show()"/>
+                                    &nbsp;
+                                    <!-- VIEW button: id is used since it is referenced to be activated or deactivated -->
+                                    <p:commandButton id="viewButton" value="View" icon="fas fa-eye" styleClass="rounded-button"
+                                                     update=":CountryViewDlg" oncomplete="PF('CountryViewDialog').show()"
+                                                     disabled="#{empty countryController.selected}"/>
+                                    &nbsp;
+                                    <!-- EDIT button: id is used since it is referenced to be activated or deactivated -->
+                                    <p:commandButton id="editButton" value="Edit" icon="fas fa-edit" styleClass="rounded-button"
+                                                     update=":CountryEditDlg" oncomplete="PF('CountryEditDialog').show()"
+                                                     disabled="#{empty countryController.selected}"/>
+                                    &nbsp;
+                                    <!-- ***************************************************
+                                    Display a Confirmation dialog for the DELETE button
+                                    id is used since it is referenced to be activated or not
+                                    **************************************************** -->
+                                    <p:commandButton id="deleteButton" value="Delete" icon="fas fa-trash-alt"  styleClass="rounded-button"
+                                                     actionListener="#{countryController.destroy()}"
+                                                     update="datalist,:growlInfoMessage,:growlWarningMessage,:growlErrorMessage,:growlFatalMessage"
+                                                     disabled="#{empty countryController.selected}">
+
+                                        <p:confirm header="Deletion Confirmation"
+                                                   message="Are you sure you want to permanently delete the selected country #{countryController.selected.nameCommon} from the database?"/>
+                                    </p:commandButton>
+
+                                    <p:confirmDialog id="confirmDialogBox" global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                        <div align="center">
+                                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="fas fa-window-close" />
+                                            &nbsp;
+                                            <p:commandButton value="Yes" type="button" class="ui-confirmdialog-yes ui-button-danger" icon="fas fa-check-square" />
+                                        </div>
+                                    </p:confirmDialog>
+                                    <!-- *******************************************
+                                    End of Display of the DELETE Confirmation dialog
+                                    ******************************************** -->
+                                    &nbsp;
+                                    <!-- FLAG button: id is used since it is referenced to be activated or deactivated -->
+                                    <p:commandButton id="flagButton" value="Flag" icon="fas fa-flag" styleClass="rounded-button"
+                                                     update=":FlagViewDlg" oncomplete="PF('FlagViewDialog').show()"
+                                                     disabled="#{empty countryController.selected}"/>
+                                    &nbsp;
+                                    <!-- MAP button: id is used since it is referenced to be activated or deactivated -->
+                                    <p:commandButton id="mapButton" value="Map" icon="fas fa-globe" styleClass="rounded-button"
+                                                     update=":MapViewDlg" oncomplete="PF('MapViewDialog').show()"
+                                                     disabled="#{empty countryController.selected}"/>
+                                </div>
+                            </f:facet>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </div>
+
+            <!-- Clicking the Create button displays the included Create.xhtml file in a dialog window on top of this page. -->
+            <ui:include src="/country/Create.xhtml"/>
+
+            <!-- Clicking the View button displays the included View.xhtml file in a dialog window on top of this page. -->
+            <ui:include src="/country/View.xhtml"/>
+
+            <!-- Clicking the Edit button displays the included Edit.xhtml file in a dialog window on top of this page. -->
+            <ui:include src="/country/Edit.xhtml"/>
+
+            <!-- Clicking the Flag button displays the included Flag.xhtml file in a dialog window on top of this page. -->
+            <ui:include src="/country/Flag.xhtml"/>
+
+            <!-- Clicking the Map button displays the included Map.xhtml file in a dialog window on top of this page. -->
+            <ui:include src="/country/Map.xhtml"/>
+
+        </ui:define>
+    </ui:composition>
+</html>

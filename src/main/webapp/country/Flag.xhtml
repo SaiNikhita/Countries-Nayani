@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="jakarta.tags.core">
+
+<ui:composition>
+    <!--
+    =================================================================
+    |  Clicking the FLAG button in List.xhtml displays this Dialog  |
+    |  window showing the selected country's flag image.            |
+    =================================================================
+    -->
+    <p:dialog id="FlagViewDlg" header="#{countryController.selected.nameCommon}" widgetVar="FlagViewDialog"
+              modal="true" position="center" appendTo="@(body)" width="60%"
+              showEffect="slide" hideEffect="fade" responsive="true" >
+
+        <!--
+        We define the local variable countryCode and use it below as a method parameter.
+        The local variable's value is set by the EL expression during view build time.
+        -->
+        <c:set var="countryCode" value="#{countryController.selected.cca2}" scope="request" />
+
+        <h:form id="FlagViewForm" class="ui-datatable-data">
+            <div align="center">
+                <img src="https://flagcdn.com/#{countryController.countryCodeInLowerCase(countryCode)}.svg"
+                     alt="Country Flag" class="scalableImage" />
+                <br /><br />
+                <h:panelGroup>
+                    <!-- CLOSE button -->
+                    <p:commandButton value="Close" icon="fas fa-window-close" styleClass="ui-button-outlined"
+                                     onclick="PF('FlagViewDialog').hide()" />
+                </h:panelGroup>
+            </div>
+        </h:form>
+
+    </p:dialog>
+</ui:composition>
+</html>

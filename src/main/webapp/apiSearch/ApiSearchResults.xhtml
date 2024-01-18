@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="jakarta.tags.core">
+
+<!-- This page is constructed based on the siteTemplate -->
+<ui:composition template="/template/siteTemplate.xhtml">
+    <ui:define name="title">
+        <!-- Set the page title -->
+        <h:outputText value="Countries API Search Results"/>
+    </ui:define>
+
+    <!-- Create the content for this page below -->
+    <ui:define name="editableContent">
+
+        <!-- In case of JSF validation error, set 'selected' to null in countryApiController -->
+        <c:if test="#{facesContext.validationFailed}">
+            ${countryApiController.unselect()}
+        </c:if>
+
+        <!-- Set 'selected' to null in countryApiController when the user refreshes / reloads this JSF page -->
+        <f:metadata>
+            <f:viewAction action="#{countryApiController.unselect()}" rendered="#{facesContext.postback}"/>
+        </f:metadata>
+
+        <div align="center">
+            <h:form id="ResultsListForm">
+                <p:panel header="Countries API Search Results">
+                    <p:dataTable id="datalist"
+                                 value="#{countryApiController.listOfCountriesFound}"
+                                 var="aCountry"
+                                 widgetVar="countriesApiDataTable"
+                                 selectionMode="single"
+                                 selection="#{countryApiController.selected}"
+                                 reflow="true"
+                                 showGridlines="true"
+                                 paginator="true"
+                                 rowKey="#{aCountry.id}"
+                                 rows="5"
+                                 rowsPerPageTemplate="5,10,20,30,50,70,90">
+
+                        <p:ajax event="rowSelect" update="addButton viewButton"/>
+                        <p:ajax event="rowUnselect" update="addButton viewButton"/>
+
+                        <!--
+                        *********************
+                        *    Country Name   *
+                        *********************
+                        -->
+                        <p:column headerText="Name" sortBy="#{aCountry.nameCommon}"
+                                  style="vertical-align: top">
+                            <h:outputText value="#{aCountry.nameCommon}"/>
+                        </p:column>
+
+                        <!--
+                        *********************
+                        *    Country Flag   *
+                        *********************
+                        Country code must be in lower case for the flag URL
+                        -->
+                        <p:column headerText="Flag" style="width: 60px; text-align: center; vertical-align: top">
+                            <img src="https://flagcdn.com/#{countryController.countryCodeInLowerCase(aCountry.cca2)}.svg"
+                                 alt="Country Flag" width="60px"/>
+                        </p:column>
+
+                        <!--
+                        ******************************
+                        *    Country 2-letter Code   *
+                        ******************************
+                        -->
+                        <p:column headerText="Code" sortBy="#{aCountry.cca2}"
+                                  style="width: 80px; text-align: center; vertical-align: top">
+                            <h:outputText value="#{aCountry.cca2}"/>
+                        </p:column>
+
+                        <!--
+                        *********************
+                        *    Capital City   *
+                        *********************
+                        -->
+                        <p:column headerText="Capital City" sortBy="#{aCountry.capitalCity}"
+                                  style="vertical-align: top">
+                            <h:outputText value="#{aCountry.capitalCity}"/>
+                        </p:column>
+
+                        <!--
+                        ***************************
+                        *    Country Population   *
+                        ***************************
+                        -->
+                        <p:column headerText="Population" sortBy="#{aCountry.population}"
+                                  style="text-align: right; vertical-align: top">
+                            <h:outputText value="#{aCountry.population}">
+                                <!-- Insert commas into population number as thousands separators -->
+                                <f:convertNumber type="number" groupingUsed="true"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <!--
+                        ***************************
+                        *    Country Total Area   *
+                        ***************************
+                        The total area is the sum of all land and inland water bodies (lakes, reservoirs, rivers).
+                        -->
+                        <p:column headerText="Total Area in km2" sortBy="#{aCountry.totalArea}"
+                                  style="text-align: right; vertical-align: top">
+                            <h:outputText value="#{aCountry.totalArea}">
+                                <!-- Insert commas into total area number as thousands separators -->
+                                <f:convertNumber type="number" groupingUsed="true"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <!--
+                        ******************************
+                        *    Country Main Language   *
+                        ******************************
+                        -->
+                        <p:column headerText="Language" sortBy="#{aCountry.language}"
+                                  style="vertical-align: top">
+                            <h:outputText value="#{aCountry.language}"/>
+                        </p:column>
+
+                        <!--
+                        *************************
+                        *    Country Currency   *
+                        *************************
+                        -->
+                        <p:column headerText="Currency" sortBy="#{aCountry.currency}"
+                                  style="vertical-align: top">
+                            <h:outputText value="#{aCountry.currency}"/>
+                        </p:column>
+
+                        <!--
+                        *************************
+                        *    Country Latitude   *
+                        *************************
+                        -->
+                        <p:column headerText="Latitude" style="text-align: left; vertical-align: top">
+                            <h:outputText value="#{aCountry.latitude}"/>
+                        </p:column>
+
+                        <!--
+                        **************************
+                        *    Country Longitude   *
+                        **************************
+                        -->
+                        <p:column headerText="Longitude" style="text-align: left; vertical-align: top">
+                            <h:outputText value="#{aCountry.longitude}"/>
+                        </p:column>
+
+                        <!--
+                        *************************
+                        *   Data Table Footer   *
+                        *************************
+                        -->
+                        <f:facet name="footer">
+                            <div align="center">
+                                <!-- ADD button -->
+                                <p:commandButton id="addButton" value="Add to Favorites" icon="fas fa-plus" styleClass="rounded-button"
+                                                 action="#{countryController.addToFavorites()}"
+                                                 update=":growlInfoMessage,:growlWarningMessage,:growlErrorMessage,:growlFatalMessage"
+                                                 disabled="#{empty countryApiController.selected}"/>
+                                &nbsp;
+                                <!-- VIEW button: id is used since it is referenced to be activated or deactivated -->
+                                <p:commandButton id="viewButton" value="View" icon="fas fa-eye" styleClass="rounded-button"
+                                                 update=":CountryApiViewDlg" oncomplete="PF('CountryApiViewDialog').show()"
+                                                 disabled="#{empty countryApiController.selected}"/>
+                            </div>
+                        </f:facet>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+        </div>
+
+        <!--
+        ==========================================================
+        |  Clicking the VIEW button in List.xhtml displays this  |
+        |  Dialog window showing the selected country's data.    |
+        ==========================================================
+        height="400" makes the dialog window to be vertically scrollable
+        width="60%" and responsive="true" make the dialog window horizontally responsive
+        class="scalableImage" makes the displayed image responsive
+        -->
+        <p:dialog id="CountryApiViewDlg" header="#{countryApiController.selected.nameCommon}"
+                  widgetVar="CountryApiViewDialog"
+                  modal="true" position="center" appendTo="@(body)" width="60%" height="500"
+                  showEffect="slide" hideEffect="fade" responsive="true">
+            <!--
+            Various effect options can be used when showing and closing the dialog.
+            Use showEffect and hideEffect options to apply these effects:
+                blind, bounce, clip, drop, explode, fade, fold, highlight, puff,
+                pulsate, scale, shake, size, slide and transfer. [PrimeFaces Documentation]
+            -->
+            <h:form id="CountryApiViewForm" class="ui-datatable-data">
+                <div align="center">
+                    <!--
+                    We define the local variable countryCode and use it below as a method parameter.
+                    The local variable's value is set by the EL expression during view build time.
+                    -->
+                    <c:set var="countryCode" value="#{countryApiController.selected.cca2}" scope="request"/>
+
+                    <!-- Display the selected country's flag image -->
+                    <img src="https://flagcdn.com/#{countryController.countryCodeInLowerCase(countryCode)}.svg"
+                         alt="Country Flag" style="width:50%"/>
+
+                    <br/><br/>
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2" columnClasses="panelGridColumn1, panelGridColumn2"
+                                     rendered="#{countryApiController.selected != null}">
+
+                            <h:outputText value="Common Name:"/>
+                            <h:outputText value="#{countryApiController.selected.nameCommon}"/>
+
+                            <h:outputText value="2-Letter Code:"/>
+                            <h:outputText value="#{countryApiController.selected.cca2}"/>
+
+                            <h:outputText value="Capital City:"/>
+                            <h:outputText value="#{countryApiController.selected.capitalCity}"/>
+
+                            <h:outputText value="Population:"/>
+                            <h:outputText value="#{countryApiController.selected.population}">
+                                <!-- Insert commas into population number as thousands separators -->
+                                <f:convertNumber type="number" groupingUsed="true"/>
+                            </h:outputText>
+
+                            <!-- The total area is the sum of all land and inland water bodies (lakes, reservoirs, rivers). -->
+                            <h:outputText value="Total Area in km&lt;sup&gt;2&lt;sup/&gt;" escape="false"/>
+                            <h:outputText value="#{countryApiController.selected.totalArea}">
+                                <!-- Insert commas into total area number as thousands separators -->
+                                <f:convertNumber type="number" groupingUsed="true"/>
+                            </h:outputText>
+
+                            <h:outputText value="Language:"/>
+                            <h:outputText value="#{countryApiController.selected.language}"/>
+
+                            <h:outputText value="Currency:"/>
+                            <h:outputText value="#{countryApiController.selected.currency}"/>
+
+                            <h:outputText value="Latitude:"/>
+                            <h:outputText value="#{countryApiController.selected.latitude}"/>
+
+                            <h:outputText value="Longitude:"/>
+                            <h:outputText value="#{countryApiController.selected.longitude}"/>
+
+                        </p:panelGrid>
+                    </h:panelGroup>
+                    <br/>
+                    <h:panelGroup>
+                        <!-- CLOSE button -->
+                        <p:commandButton value="Close" icon="fas fa-window-close" styleClass="ui-button-outlined"
+                                         onclick="PF('CountryApiViewDialog').hide()"/>
+                    </h:panelGroup>
+                </div>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>
+</html>

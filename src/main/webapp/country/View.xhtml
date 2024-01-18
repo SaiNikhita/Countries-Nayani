@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="jakarta.tags.core"
+      xmlns:f="jakarta.faces.core">
+
+<ui:composition>
+    <!--
+    ==========================================================
+    |  Clicking the VIEW button in List.xhtml displays this  |
+    |  Dialog window showing the selected country's data.    |
+    ==========================================================
+    height="400" makes the dialog window to be vertically scrollable
+    width="60%" and responsive="true" make the dialog window horizontally responsive
+    class="scalableImage" makes the displayed image responsive
+    -->
+    <p:dialog id="CountryViewDlg" header="#{countryController.selected.nameCommon}" widgetVar="CountryViewDialog"
+              modal="true" position="center" appendTo="@(body)" width="80%" height="500"
+              showEffect="slide" hideEffect="fade" responsive="true" >
+        <!--
+        Various effect options can be used when showing and closing the dialog.
+        Use showEffect and hideEffect options to apply these effects:
+            blind, bounce, clip, drop, explode, fade, fold, highlight, puff,
+            pulsate, scale, shake, size, slide and transfer. [PrimeFaces Documentation]
+        -->
+        <h:form id="CountryViewForm" class="ui-datatable-data">
+            <div align="center">
+                <!--
+                We define the local variable countryCode and use it below as a method parameter.
+                The local variable's value is set by the EL expression during view build time.
+                -->
+                <c:set var="countryCode" value="#{countryController.selected.cca2}" scope="request" />
+
+                <!-- Display the selected country's flag image -->
+                <img src="https://flagcdn.com/#{countryController.countryCodeInLowerCase(countryCode)}.svg"
+                     alt="Country Flag" style="width:50%" />
+
+                <br /><br />
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" columnClasses="panelGridColumn1, panelGridColumn2"
+                                 rendered="#{countryController.selected != null}">
+
+                        <h:outputText value="Common Name:"/>
+                        <h:outputText value="#{countryController.selected.nameCommon}"/>
+
+                        <h:outputText value="2-Letter Code:"/>
+                        <h:outputText value="#{countryController.selected.cca2}"/>
+
+                        <h:outputText value="Capital City:"/>
+                        <h:outputText value="#{countryController.selected.capitalCity}"/>
+
+                        <h:outputText value="Population:"/>
+                        <h:outputText value="#{countryController.selected.population}" >
+                            <!-- Insert commas into population number as thousands separators -->
+                            <f:convertNumber type="number" groupingUsed="true" />
+                        </h:outputText>
+
+                        <!-- The total area is the sum of all land and inland water bodies (lakes, reservoirs, rivers). -->
+                        <h:outputText value="Total Area in km&lt;sup&gt;2&lt;/sup&gt;" escape="false" />
+                        <h:outputText value="#{countryController.selected.totalArea}">
+                            <!-- Insert commas into total area number as thousands separators -->
+                            <f:convertNumber type="number" groupingUsed="true" />
+                        </h:outputText>
+
+                        <h:outputText value="Language:"/>
+                        <h:outputText value="#{countryController.selected.language}"/>
+
+                        <h:outputText value="Currency:"/>
+                        <h:outputText value="#{countryController.selected.currency}"/>
+
+                        <h:outputText value="Latitude:"/>
+                        <h:outputText value="#{countryController.selected.latitude}"/>
+
+                        <h:outputText value="Longitude:"/>
+                        <h:outputText value="#{countryController.selected.longitude}"/>
+
+                    </p:panelGrid>
+                </h:panelGroup>
+                <br />
+                <h:panelGroup>
+                    <!-- CLOSE button -->
+                    <p:commandButton value="Close" icon="fas fa-window-close" styleClass="ui-button-outlined"
+                                     onclick="PF('CountryViewDialog').hide()" />
+                </h:panelGroup>
+            </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>
+</html>

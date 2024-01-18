@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="jakarta.tags.core">
+
+<ui:composition>
+    <!--
+    =========================================================
+    |  Clicking the MAP button in List.xhtml displays this  |
+    |  Dialog window showing the selected country's map.    |
+    =========================================================
+    -->
+    <p:dialog id="MapViewDlg" header="#{countryController.selected.nameCommon}"
+              widgetVar="MapViewDialog" modal="true" position="center" appendTo="@(body)"
+              showEffect="slide" hideEffect="fade" responsive="true" >
+
+        <h:form id="MapViewForm">
+            <!--
+            We define the local variable countryArea and use it below as a method parameter.
+            The local variable's value is set by the EL expression during view build time.
+            -->
+            <c:set var="countryArea" value="#{countryController.selected.totalArea}" scope="request" />
+
+            <div align="center">
+                <!--
+                p:gmap is a map component integrated with Google Maps JavaScript API V3.
+
+                You must register as Google developer and obtain an API key to use p:gmap
+                by following the instructions in siteTemplate.xhtml
+                -->
+                <p:gmap center="#{countryController.selected.latitude}, #{countryController.selected.longitude}"
+                        zoom="#{countryController.getZoomLevel(countryArea)}" type="roadmap"
+                        style="width:600px;height:400px" />
+
+                <br /><br />
+                <h:panelGroup>
+                    <!-- CLOSE button -->
+                    <p:commandButton value="Close" icon="fas fa-window-close" styleClass="ui-button-outlined"
+                                     onclick="PF('MapViewDialog').hide()" />
+                </h:panelGroup>
+            </div>
+        </h:form>
+    </p:dialog>
+</ui:composition>
+</html>

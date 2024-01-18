@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="jakarta.faces.core">
+
+    <ui:composition>
+        <!-- 
+        =======================================================================
+        |  Selecting the API SEARCH menu option displays this Dialog window   |
+        |  for the user to search for a country.                              |
+        =======================================================================
+        -->
+        <p:dialog id="CountrySearchDlg" header="Search API" widgetVar="CountrySearchDialog"
+                  modal="true" position="center" appendTo="@(body)"
+                  showEffect="slide" hideEffect="fade" responsive="true" >
+
+            <h:form id="CountrySearchForm">
+                <p:panel>                
+                    <h:panelGrid columns="4">
+                        <p:outputLabel value="Search: " />
+                        <p:inputText id="searchString" value="#{countryApiController.searchString}"
+                                     required="true" requiredMessage="Please Enter a Search String!"
+                                     placeholder="Enter search string" >
+                            <f:validateLength minimum="2" />
+                        </p:inputText>
+
+                        <!--
+                        case "Country Common Name":
+                             // Search query can be entire common name or just part of it.
+                        case "Country Full Name":
+                             // Search by country full name
+                        case "Country Code":
+                             // Search by cca2, ccn3, cca3 or cioc country code
+                        case "Capital City Name":
+                             // Search by capital city name
+                        case "Currency Name or Code":
+                             // Search by currency name or currency code
+                        case "Language Name":
+                             // Search by language name or language iso639_2 code
+                        case "Region":
+                             // Search by Region: Africa, America, Asia, Europe, Oceania.
+                             // Search query can be region’s full name or just part of it.
+                        case "Subregion":
+                             // Search by Subregion: South America, Southern Europe, Central America, Eastern Asia, etc.
+                             // Search query can be subregion’s full name or just part of it.
+                        -->
+
+                        <span id="space">&nbsp;</span>
+
+                        <!-- Search category is selected here. -->
+                        <p:selectOneMenu id="searchField" value="#{countryApiController.searchField}"
+                                         required="true" requiredMessage="Please Select a Search Category!" >
+
+                            <f:selectItem itemLabel="Select Category"       itemValue="" noSelectionOption="true"/>
+                            <f:selectItem itemLabel="Country Common Name"   itemValue="Country Common Name"/>
+                            <f:selectItem itemLabel="Country Full Name"     itemValue="Country Full Name"/>
+                            <f:selectItem itemLabel="Country Code"          itemValue="Country Code"/>
+                            <f:selectItem itemLabel="Capital City Name"     itemValue="Capital City Name"/>
+                            <f:selectItem itemLabel="Currency Name or Code" itemValue="Currency Name or Code"/>
+                            <f:selectItem itemLabel="Language Name"         itemValue="Language Name"/>
+                            <f:selectItem itemLabel="Region"                itemValue="Region"/>
+                            <f:selectItem itemLabel="Subregion"             itemValue="Subregion"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+
+                    <h:panelGroup>
+                        <br /><br />
+                        <div align="center">
+                            <!-- SUBMIT button -->
+                            <p:commandButton value="Submit" icon="fas fa-arrow-up" styleClass="rounded-button"
+                                             ajax="false" action="#{countryApiController.performSearch()}" />
+                            &nbsp;
+                            <!-- CANCEL button -->
+                            <p:commandButton value="Cancel" icon="fas fa-ban" styleClass="ui-button-outlined"
+                                             onclick="PF('CountrySearchDialog').hide()" immediate="true" />
+                        </div>
+                    </h:panelGroup>
+                </p:panel>
+            </h:form>
+        </p:dialog>
+    </ui:composition>
+</html>

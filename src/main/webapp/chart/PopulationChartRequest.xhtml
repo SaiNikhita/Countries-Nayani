@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<!-- This page is constructed based on the siteTemplate -->
+<ui:composition template="/template/siteTemplate.xhtml">
+   <ui:define name="title">
+      <!-- Set the page title -->
+      <h:outputText value="Country Charts" />
+   </ui:define>
+
+   <!-- Create the content for this page below -->
+   <ui:define name="editableContent">
+
+      <h:form id="CountryChartsForm">
+
+         <div id="pickCountries" align="center" >
+            <br />
+            <h1>Select Countries to Chart Their Populations</h1>&nbsp;
+            <p:outputLabel id="pickListTitle" for="pickList">
+               <!--
+               Add context-sensitive Help icon to mouse over to see the Help info
+               -->
+               <i class="fas fa-question-circle" />
+               <!--
+               When the user mouses over the icon, the following tooltip is displayed
+               to provide context-sensitive help information to the user.
+               -->
+               <p:tooltip for="pickListTitle" showEffect="clip" hideEffect="explode" position="top">
+                  <!-- escape="false" enables the insertion of line breaks with <br /> within the message -->
+                  <h:outputText value="To select or unselect a country name:" escape="false" />
+                  <br />
+                  <h:outputText value="&nbsp;&nbsp;&nbsp;&nbsp;(1) drag and drop from one collection to another, or" escape="false" />
+                  <br />
+                  <h:outputText value="&nbsp;&nbsp;&nbsp;&nbsp;(2) double click the country name, or" escape="false" />
+                  <br />
+                  <h:outputText value="&nbsp;&nbsp;&nbsp;&nbsp;(3) use the arrow buttons." escape="false" />
+                  <br />
+                  <h:outputText value="To reorder the collection:" escape="false" />
+                  <br />
+                  <h:outputText value="&nbsp;&nbsp;&nbsp;&nbsp;Drag and drop within the collection." escape="false" />
+               </p:tooltip>
+            </p:outputLabel>
+
+            <br /><br />
+            <!--
+            If country data is changed, recreate the DualListModel used by p:pickList below.
+            -->
+            <c:if test="#{countryController.countryDataChanged}">
+               #{pickListController.recreateDualListModel()}
+            </c:if>
+
+            <!--
+            p:pickList is used for transferring data between two different collections.
+            In our case:
+                <> left collection (Source) lists all of the country names in the database, and
+                <> right collection (Target) lists the country names selected by the user.
+
+            To select or unselect a country name:
+                <> Drag and drop from one collection to another
+                <> Double click the country name
+
+            To reorder the collection:
+                <> Drag and drop within the collection
+
+            Create the left collection (Source) listing all of the country names from the database
+            in the pickListController bean and display it here. The right collection (Target)
+            will be shown as empty and will be filled as the user makes selections.
+            -->
+            <p:pickList id="pickList" value="#{pickListController.countryNames}" var="countryName"
+                        itemLabel="#{countryName}" itemValue="#{countryName}" >
+
+               <!-- Title of the Left Collection (Source) -->
+               <f:facet name="sourceCaption">List of Countries</f:facet>
+
+               <!-- Title of the Right Collection (Target) -->
+               <f:facet name="targetCaption">Selected Countries</f:facet>
+
+               <!--
+               If transferred from Target list back to Source list, sort the Source list
+               again and update the CountryChartsForm to show the newly sorted Source list.
+               -->
+               <p:ajax event="transfer" listener="#{pickListController.handleTransfer}"
+                       update=":CountryChartsForm" />
+            </p:pickList>
+            <br /><br />
+            <!--
+            *********************************************************************************
+            The colon ':' prefix in the 'update' attribute indicates that the component
+            with 'id' given after the colon is outside of the closest parent NamingContainer.
+            Example NamingContainers: h:form, p:pickList, p:dataTable, h:panelGroup.
+
+            For example, in the p:ajax update attribute, we use a colon because the id
+            CountryChartsForm is outside of the closest parent NamingContainer p:pickList.
+
+            We also use a colon for the BarChartForm and HorBarChartForm ids below
+            because they are outside of the closest parent NamingContainer.
+            *********************************************************************************
+            -->
+
+            <h:panelGroup>
+               <br/><br/>
+               <div align="center">
+                  <!-- SUBMIT button -->
+                  <!-- update is required for the display of the growl messages -->
+                  <p:commandButton value="Submit" icon="fas fa-arrow-up" styleClass="rounded-button"
+                                   update=":growlInfoMessage,:growlWarningMessage,:growlErrorMessage,:growlFatalMessage"
+                                   action="#{populationChartController.displayPopulationChart()}"/>
+               </div>
+            </h:panelGroup>
+         </div>
+      </h:form>
+   </ui:define>
+</ui:composition>
+</html>

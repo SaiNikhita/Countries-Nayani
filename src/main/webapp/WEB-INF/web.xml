@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+    <!--
+    ====================================================================================
+    |   This web.xml file is called Java Web Application Deployment Descriptor File.   |
+    |   It is used to configure a Java web application for deployment.                 |
+    ====================================================================================
+    -->
+    <!--
+    ***************************
+    *   Faces Configuration   *
+    ***************************
+    -->
+    <!-- Default first file to show when the application is launched -->
+    <welcome-file-list>
+        <welcome-file>index.xhtml</welcome-file>
+    </welcome-file-list>
+
+    <!--
+    Faces Servlet is the central controller for the JSF applications.
+    It manages the request processing lifecycle.
+    The <load-on-startup> value 1 indicates that FacesServlet must be loaded
+    (instantiated and have its init() called) on the startup of the Web application.
+    -->
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Faces Servlet must automatically map a page to a page of type *.xhtml -->
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+
+    <!--
+    jakarta.faces.PROJECT_STAGE = Development
+        Instructs the compiler to perform detailed error checking. This may degrade
+        the execution efficiency (performance) of large and complex applications.
+
+    jakarta.faces.PROJECT_STAGE = Production
+        Instructs the compiler to perform minimal error checking. This may improve
+        the execution efficiency (performance) of large and complex applications.
+
+    Change to "Production" when you are ready to deploy to obtain better performance.
+
+    Development: detailed error checking, slower execution
+    Production:  minimal error checking, faster execution
+    -->
+    <context-param>
+        <param-name>jakarta.faces.PROJECT_STAGE</param-name>
+        <param-value>Development</param-value>
+    </context-param>
+
+    <!-- Enable insertion of comments within a panel grid -->
+    <context-param>
+        <param-name>jakarta.faces.FACELETS_SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <!--
+    *************************************
+    *   Session Timeout Configuration   *
+    *************************************
+    -->
+    <!-- Expire user's session after 30 minutes of inactivity -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+    <!-- Show the sessionTimeout.xhtml page when ViewExpiredException occurs. -->
+    <error-page>
+        <exception-type>jakarta.faces.application.ViewExpiredException</exception-type>
+        <location>/template/sessionTimeout.xhtml</location>
+    </error-page>
+
+</web-app>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+        <!-- 
+        =================================================================
+        |  Clicking the EDIT button in List.xhtml displays this Dialog  |
+        |  window for the user to update the selected country's data.   |
+        =================================================================
+        -->
+        <p:dialog id="CountryEditDlg" header="Edit #{countryController.selected.nameCommon} Data" widgetVar="CountryEditDialog"
+                  modal="true" position="center" appendTo="@(body)" width="80%" height="500"
+                  showEffect="slide" hideEffect="fade" responsive="true" >
+            <!--
+            Various effect options can be used when showing and closing the dialog.
+            Use showEffect and hideEffect options to apply these effects:
+                blind, bounce, clip, drop, explode, fade, fold, highlight, puff,
+                pulsate, scale, shake, size, slide and transfer. [PrimeFaces Documentation]
+            -->
+
+            <!-- class="ui-datatable-data" in siteStyles reduces row paddings -->
+            <h:form id="CountryEditForm" class="ui-datatable-data">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" columnClasses="panelGridColumn1, panelGridColumn2"
+                                 rendered="#{countryController.selected != null}">
+                        <p:outputLabel value="Name:" for="name" />
+                        <p:inputText id="name" value="#{countryController.selected.nameCommon}"
+                                     required="true" requiredMessage="Country Name is Required!"/>
+
+                        <p:outputLabel value="2-Letter Code:" for="code" />
+                        <!-- Use mask to allow only 2 letters a to z and A to Z -->
+                        <p:inputMask id="code" value="#{countryController.selected.cca2}"
+                                     mask="aa"
+                                     required="true" requiredMessage="Country 2-Letter Code is Required!" />
+
+                        <p:outputLabel value="Capital City:" for="capitalCity" />
+                        <p:inputText id="capitalCity" value="#{countryController.selected.capitalCity}"
+                                     required="true" requiredMessage="Capital City Name is Required!"/>
+
+                        <p:outputLabel value="Population:" for="population" />
+                        <p:inputNumber id="population" value="#{countryController.selected.population}"
+                                       decimalPlaces="0" thousandSeparator=","
+                                       required="true" requiredMessage="Population is Required!" />
+
+                        <p:outputLabel value="Total Area in km&lt;sup&gt;2&lt;sup/&gt;" escape="false" for="totalArea" />
+                        <p:inputNumber id="totalArea" value="#{countryController.selected.totalArea}"
+                                       decimalPlaces="0" thousandSeparator=","
+                                       symbol=" sq mi" symbolPosition="s"
+                                       required="true" requiredMessage="Total Area is Required!" />
+
+                        <p:outputLabel value="Language:" for="language" />
+                        <p:inputText id="language" value="#{countryController.selected.language}"
+                                     required="true" requiredMessage="Language is Required!" />
+
+                        <p:outputLabel value="Currency:" for="currency" />
+                        <p:inputText id="currency" value="#{countryController.selected.currency}"
+                                     required="true" requiredMessage="Currency is Required!" />
+
+                        <p:outputLabel value="Latitude:" for="latitude" />
+                        <p:inputNumber id="latitude" value="#{countryController.selected.latitude}"
+                                       decimalPlaces="6" thousandSeparator=""
+                                       required="true" requiredMessage="Latitude is Required!" />
+
+                        <p:outputLabel value="Longitude:" for="longitude" />
+                        <p:inputNumber id="longitude" value="#{countryController.selected.longitude}"
+                                       decimalPlaces="6" thousandSeparator=""
+                                       required="true" requiredMessage="Longitude is Required!" />
+
+                    </p:panelGrid>
+
+                </h:panelGroup>
+                <br />
+                <h:panelGroup>
+                    <div align="center">
+                        <!-- SAVE button -->
+                        <p:commandButton value="Save" icon="fas fa-save" styleClass="rounded-button"
+                                         ajax="false" actionListener="#{countryController.update()}"
+                                         update="display,:CountryListForm:datalist,:growlInfoMessage,:growlWarningMessage,:growlErrorMessage,:growlFatalMessage"
+                                         oncomplete="handleSubmit(args, 'CountryEditDialog');"/>
+                        &nbsp;
+                        <!-- CANCEL button -->
+                        <p:commandButton value="Cancel" icon="fas fa-ban" styleClass="ui-button-outlined"
+                                         immediate="true" onclick="PF('CountryEditDialog').hide()" />
+                    </div>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+    </ui:composition>
+</html>

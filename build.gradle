@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group 'edu.vt'
+version '1.0'
+
+repositories {
+    // Default Maven Central repository
+    mavenCentral()
+
+    // flat filesystem directory containing the PrimeFaces JAR file
+    flatDir {
+        // For Mac or Linux
+        dirs '/Users/sainikhitanayani/IdeaProjects/Countries-Nayani/src/main/webapp/WEB-INF/lib'
+
+        // Windows (Do not use double back slashes)
+        // dirs 'C:/Users/Balci/IdeaProjects/Countries-Balci/src/main/webapp/WEB-INF/lib'
+    }
+}
+
+dependencies {
+    // Jakarta EE 10 dependency
+    compileOnly('jakarta.platform:jakarta.jakartaee-api:10.0.0')
+
+    // 13.0.0-jakarta.jar is located in the flat filesystem directory defined above
+    // 13.0.0-jakarta.jar provides UI components for Jakarta Server Faces (JSF)
+    compileOnly group: 'org.primefaces', name: 'primefaces', version: '13.0.0-jakarta'
+
+    // MySQL JDBC Connector to Java is configured in WildFly
+    compileOnly group: 'mysql', name: 'mysql-connector-j', version: '8.1.0'
+}

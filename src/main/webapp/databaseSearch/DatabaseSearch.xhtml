@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Created by Osman Balci on 2023.7.24
+  - Copyright © 2023 Osman Balci. All rights reserved.
+  -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<!-- This page is constructed based on the siteTemplate -->
+<ui:composition template="/template/siteTemplate.xhtml">
+
+    <ui:define name="title">
+        <!-- Set the page title -->
+        <h:outputText value="Database Search" />
+    </ui:define>
+
+    <!-- Create the content for this page below -->
+    <ui:define name="editableContent">
+
+        <h:form id="DatabaseSearchForm">
+            <div align="center">
+                <h:graphicImage value="#{resource['images:searchDatabase.png']}"
+                                style="width: 150px" />
+                <h1>Database Search</h1>
+                <br />
+                <table width="80%" border="1" align="center" cellpadding="5" cellspacing="0">
+                    <tbody>
+                    <tr>
+                        <th width="60" nowrap="nowrap" scope="col">Type</th>
+                        <th scope="col">Description</th>
+                        <th width="200" scope="col">Search</th>
+                    </tr>
+                    <tr>
+                        <td width="60" align="center" nowrap="nowrap">1</td>
+                        <td align="center">Search country name, capitalCity, language, or currency individually or search in each</td>
+                        <td width="200" align="center">
+                            <p:commandButton value="Search Type 1" icon="fas fa-search" styleClass="rounded-button"
+                                             update=":DBSearchDlg1" oncomplete="PF('DBSearchDialog1').show()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="60" align="center" nowrap="nowrap">2</td>
+                        <td align="center">Country population is between minPopulationQ and maxPopulationQ</td>
+                        <td width="200" align="center">
+                            <p:commandButton value="Search Type 2" icon="fas fa-search" styleClass="rounded-button"
+                                             update=":DBSearchDlg2" oncomplete="PF('DBSearchDialog2').show()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="60" align="center" nowrap="nowrap">3</td>
+                        <td align="center">Country totalArea is between minTotalAreaQ and maxTotalAreaQ</td>
+                        <td width="200" align="center">
+                            <p:commandButton value="Search Type 3" icon="fas fa-search" styleClass="rounded-button"
+                                             update=":DBSearchDlg3" oncomplete="PF('DBSearchDialog3').show()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="60" align="center" nowrap="nowrap">4</td>
+                        <td align="center">Country name contains nameQ AND population &ge; populationQ</td>
+                        <td width="200" align="center">
+                            <p:commandButton value="Search Type 4" icon="fas fa-search" styleClass="rounded-button"
+                                             update=":DBSearchDlg4" oncomplete="PF('DBSearchDialog4').show()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="60" align="center" nowrap="nowrap">5</td>
+                        <td align="center">Country currency contains currencyQ AND totalArea &le; totalAreaQ</td>
+                        <td width="200" align="center">
+                            <p:commandButton value="Search Type 5" icon="fas fa-search" styleClass="rounded-button"
+                                             update=":DBSearchDlg5" oncomplete="PF('DBSearchDialog5').show()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="60" align="center" nowrap="nowrap">6</td>
+                        <td align="center">Country language contains languageQ AND population is between minPopulationQ and maxPopulationQ</td>
+                        <td width="200" align="center">
+                            <p:commandButton value="Search Type 6" icon="fas fa-search" styleClass="rounded-button"
+                                             update=":DBSearchDlg6" oncomplete="PF('DBSearchDialog6').show()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="60" align="center" nowrap="nowrap">7</td>
+                        <td align="center">Country capitalCity contains capitalCityQ AND totalArea is between minTotalAreaQ and maxTotalAreaQ</td>
+                        <td width="200" align="center">
+                            <p:commandButton value="Search Type 7" icon="fas fa-search" styleClass="rounded-button"
+                                             update=":DBSearchDlg7" oncomplete="PF('DBSearchDialog7').show()" />
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br />
+            </div>
+        </h:form>
+
+        <!--
+        **************************************
+        Dialog pop-up window for Type 1 Search
+        **************************************
+        -->
+        <p:dialog id="DBSearchDlg1" header="Search Countries Database" widgetVar="DBSearchDialog1"
+                  modal="true" position="center" appendTo="@(body)"
+                  showEffect="slide" hideEffect="fade" responsive="true" >
+
+            <h:form id="CountrySearchForm1">
+                <p:panel>
+                    <h:panelGrid columns="4">
+                        <p:outputLabel value="Search: "/>
+                        <!-- Search string is entered here. -->
+                        <p:inputText id="searchString" value="#{countryController.searchString}"
+                                     required="true" requiredMessage="Please enter a search string!"
+                                     placeholder="Enter search string" >
+                            <f:validateLength minimum="1" />
+                        </p:inputText>
+                        &nbsp;
+                        <!-- Search category is selected here. -->
+                        <p:selectOneMenu id="searchField" value="#{countryController.searchField}"
+                                         required="true" requiredMessage="Please select a category!" >
+
+                            <f:selectItem itemLabel="Select Category" itemValue="" noSelectionOption="true"/>
+                            <f:selectItem itemLabel="All" itemValue="all"/>
+                            <f:selectItem itemLabel="Country Name" itemValue="Country Name"/>
+                            <f:selectItem itemLabel="Capital City" itemValue="Capital City"/>
+                            <f:selectItem itemLabel="Language" itemValue="Language"/>
+                            <f:selectItem itemLabel="Currency" itemValue="Currency"/>
+
+                        </p:selectOneMenu>
+
+                    </h:panelGrid>
+                    <h:panelGroup>
+                        <br /><br />
+                        <div align="center">
+                            <!-- SUBMIT button -->
+                            <p:commandButton value="Submit" icon="fas fa-arrow-up" styleClass="rounded-button"
+                                             ajax="false" action="#{countryController.search(1)}" />
+                            &nbsp;
+                            <!-- CANCEL button -->
+                            <p:commandButton value="Cancel" icon="fas fa-ban" styleClass="ui-button-outlined"
+                                             onclick="PF('DBSearchDialog1').hide()"/>
+                        </div>
+                    </h:panelGroup>
+                </p:panel>
+            </h:form>
+        </p:dialog>
+
+        <!--
+        **************************************
+        Dialog pop-up window for Type 2 Search
+        **************************************
+        Country population is between minPopulationQ and maxPopulationQ
+        -->
+        <p:dialog id="DBSearchDlg2" header="Countries Database Search Type 2" widgetVar="DBSearchDialog2"
+                  modal="true" position="center" appendTo="@(body)" width="60%"
+                  showEffect="slide" hideEffect="fade" responsive="true" >
+
+            <h:form id="CountrySearchForm2">
+                <p:panel>
+                    <h:panelGroup>
+                        <p:panelGrid columns="2" columnClasses="panelGridColumn1, panelGridColumn2" >
+                            <p:outputLabel value="Country Minimum Population " for="minPopulationQ"/>
+                            <p:inputNumber id="minPopulationQ" value="#{countryController.minPopulationQ}"
+                                           decimalPlaces="0" thousandSeparator=","
+                                           required="true" requiredMessage="Minimum Population is required!"/>
+
+                            <p:outputLabel value="Country Maximum Population " for="maxPopulationQ"/>
+                            <p:inputNumber id="maxPopulationQ" value="#{countryController.maxPopulationQ}"
+                                           decimalPlaces="0" thousandSeparator=","
+                                           required="true" requiredMessage="Maximum Population is required!"/>
+                        </p:panelGrid>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <br/><br/>
+                        <div align="center">
+                            <!-- SUBMIT button -->
+                            <p:commandButton value="Submit" icon="fas fa-arrow-up" styleClass="rounded-button"
+                                             ajax="false" action="#{countryController.search(2)}"/>
+                            &nbsp;
+                            <!-- CANCEL button -->
+                            <p:commandButton value="Cancel" icon="fas fa-ban" styleClass="ui-button-outlined"
+                                             onclick="PF('DBSearchDialog2').hide()"/>
+                        </div>
+                    </h:panelGroup>
+                </p:panel>
+            </h:form>
+        </p:dialog>
+
+        <!--
+        **************************************
+        Dialog pop-up window for Type 3 Search
+        **************************************
+        Country totalArea is between minTotalAreaQ and maxTotalAreaQ
+        -->
+        <p:dialog id="DBSearchDlg3" header="Countries Database Search Type 3" widgetVar="DBSearchDialog3"
+                  modal="true" position="center" appendTo="@(body)" width="60%"
+                  showEffect="slide" hideEffect="fade" responsive="true" >
+
+            <h:form id="CountrySearchForm3">
+                <p:panel>
+                    <h:panelGroup>
+                        <p:panelGrid columns="2" columnClasses="panelGridColumn1, panelGridColumn2" >
+                            <p:outputLabel value="Country Minimum Total Area in km&lt;sup&gt;2&lt;sup/&gt;" for="minTotalAreaQ" escape="false" />
+                            <p:inputNumber id="minTotalAreaQ" value="#{countryController.minTotalAreaQ}"
+                                           decimalPlaces="0" thousandSeparator=","
+                                           symbol=" sq km" symbolPosition="s"
+                                           required="true" requiredMessage="Minimum Total Area is required!" />
+
+                            <p:outputLabel value="Country Maximum Total Area in km&lt;sup&gt;2&lt;sup/&gt;" for="maxTotalAreaQ" escape="false" />
+                            <p:inputNumber id="maxTotalAreaQ" value="#{countryController.maxTotalAreaQ}"
+                                           decimalPlaces="0" thousandSeparator=","
+                                           symbol=" sq km" symbolPosition="s"
+                                           required="true" requiredMessage="Maximum Total Area is required!" />
+                        </p:panelGrid>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <br/><br/>
+                        <div align="center">
+                            <!-- SUBMIT button -->
+                            <p:commandButton value="Submit" icon="fas fa-arrow-up" styleClass="rounded-button"
+                                             ajax="false" action="#{countryController.search(3)}"/>
+                            &nbsp;
+                            <!-- CANCEL button -->
+                            <p:commandButton value="Cancel" icon="fas fa-ban" styleClass="ui-button-outlined"
+                                             onclick="PF('DBSearchDialog3').hide()"/>
+                        </div>
+                    </h:panelGroup>
+                </p:panel>
+            </h:form>
+        </p:dialog>
+
+        <!--
+        **************************************
+        Dialog pop-up window for Type 4 Search
+        **************************************
+        Country name contains nameQ AND population ≥ populationQ
+        -->
+        <p:dialog id="DBSearchDlg4" header="Countries Database Search Type 4" widgetVar="DBSearchDialog4"
+                  modal="true" position="center" appendTo="@(body)" width="60%"
+                  showEffect="slide" hideEffect="fade" responsive="true" >
+
+            <h:form id="CountrySearchForm4">
+                <p:panel>
+                    <h:panelGroup>
+                        <p:panelGrid columns="2" columnClasses="panelGridColumn1, panelGridColumn2" >
+                            <p:outputLabel value="Country Name " for="nameQ"/>
+                            <p:inputText id="nameQ" value="#{countryController.nameQ}"
+                                         required="true" requiredMessage="Country Name is required!"/>
+
+                            <p:outputLabel value="Country Population &ge; " for="populationQ" />
+                            <p:inputNumber id="populationQ" value="#{countryController.populationQ}"
+                                           decimalPlaces="0" thousandSeparator=","
+                                           required="true" requiredMessage="Country Population is required!"/>
+                        </p:panelGrid>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <br/><br/>
+                        <div align="center">
+                            <!-- SUBMIT button -->
+                            <p:commandButton value="Submit" icon="fas fa-arrow-up" styleClass="rounded-button"
+                                             ajax="false" action="#{countryController.search(4)}"/>
+                            &nbsp;
+                            <!-- CANCEL button -->
+                            <p:commandButton value="Cancel" icon="fas fa-ban" styleClass="ui-button-outlined"
+                                             onclick="PF('DBSearchDialog4').hide()"/>
+                        </div>
+                    </h:panelGroup>
+                </p:panel>
+            </h:form>
+        </p:dialog>
+
+        <!--
+        **************************************
+        Dialog pop-up window for Type 5 Search
+        **************************************
+        Country currency contains currencyQ AND totalArea ≤ totalAreaQ
+        -->
+        <p:dialog id="DBSearchDlg5" header="Countries Database Search Type 5" widgetVar="DBSearchDialog5"
+                  modal="true" position="center" appendTo="@(body)" width="60%"
+                  showEffect="slide" hideEffect="fade" responsive="true" >
+
+            <h:form id="CountrySearchForm5">
+                <p:panel>
+                    <h:panelGroup>
+                        <p:panelGrid columns="2" columnClasses="panelGridColumn1, panelGridColumn2" >
+                            <p:outputLabel value="Country Currency Name " for="currencyQ"/>
+                            <p:inputText id="currencyQ" value="#{countryController.currencyQ}"
+                                         required="true" requiredMessage="Country Currency Name is required!"/>
+
+                            <p:outputLabel value="Country Total Area &le; " for="totalAreaQ" />
+                            <p:inputNumber id="totalAreaQ" value="#{countryController.totalAreaQ}"
+                                           decimalPlaces="0" thousandSeparator=","
+                                           required="true" requiredMessage="Country Total Area is required!"/>
+                        </p:panelGrid>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <br/><br/>
+                        <div align="center">
+                            <!-- SUBMIT button -->
+                            <p:commandButton value="Submit" icon="fas fa-arrow-up" styleClass="rounded-button"
+                                             ajax="false" action="#{countryController.search(5)}"/>
+                            &nbsp;
+                            <!-- CANCEL button -->
+                            <p:commandButton value="Cancel" icon="fas fa-ban" styleClass="ui-button-outlined"
+                                             onclick="PF('DBSearchDialog5').hide()"/>
+                        </div>
+                    </h:panelGroup>
+                </p:panel>
+            </h:form>
+        </p:dialog>
+
+        <!--
+        **************************************
+        Dialog pop-up window for Type 6 Search
+        **************************************
+        Country language contains languageQ AND population is between minPopulationQ and maxPopulationQ
+        -->
+        <p:dialog id="DBSearchDlg6" header="Countries Database Search Type 6" widgetVar="DBSearchDialog6"
+                  modal="true" position="center" appendTo="@(body)" width="60%"
+                  showEffect="slide" hideEffect="fade" responsive="true" >
+
+            <h:form id="CountrySearchForm6">
+                <p:panel>
+                    <h:panelGroup>
+                        <p:panelGrid columns="2" columnClasses="panelGridColumn1, panelGridColumn2" >
+                            <p:outputLabel value="Country Language Name " for="languageQ"/>
+                            <p:inputText id="languageQ" value="#{countryController.languageQ}"
+                                         required="true" requiredMessage="Language Name is required!"/>
+
+                            <p:outputLabel value="Country Minimum Population " for="minPopulationQ6"/>
+                            <p:inputNumber id="minPopulationQ6" value="#{countryController.minPopulationQ}"
+                                           decimalPlaces="0" thousandSeparator=","
+                                           required="true" requiredMessage="Minimum Population is required!"/>
+
+                            <p:outputLabel value="Country Maximum Population " for="maxPopulationQ6" />
+                            <p:inputNumber id="maxPopulationQ6" value="#{countryController.maxPopulationQ}"
+                                           decimalPlaces="0" thousandSeparator=","
+                                           required="true" requiredMessage="Maximum Population is required!"/>
+                        </p:panelGrid>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <br/><br/>
+                        <div align="center">
+                            <!-- SUBMIT button -->
+                            <p:commandButton value="Submit" icon="fas fa-arrow-up" styleClass="rounded-button"
+                                             ajax="false" action="#{countryController.search(6)}"/>
+                            &nbsp;
+                            <!-- CANCEL button -->
+                            <p:commandButton value="Cancel" icon="fas fa-ban" styleClass="ui-button-outlined"
+                                             onclick="PF('DBSearchDialog6').hide()"/>
+                        </div>
+                    </h:panelGroup>
+                </p:panel>
+            </h:form>
+        </p:dialog>
+
+        <!--
+        **************************************
+        Dialog pop-up window for Type 7 Search
+        **************************************
+        Country capitalCity contains capitalCityQ AND totalArea is between minTotalAreaQ and maxTotalAreaQ
+        -->
+        <p:dialog id="DBSearchDlg7" header="Countries Database Search Type 7" widgetVar="DBSearchDialog7"
+                  modal="true" position="center" appendTo="@(body)" width="60%"
+                  showEffect="slide" hideEffect="fade" responsive="true" >
+
+            <h:form id="CountrySearchForm7">
+                <p:panel>
+                    <h:panelGroup>
+                        <p:panelGrid columns="2" columnClasses="panelGridColumn1, panelGridColumn2" >
+                            <p:outputLabel value="Capital City Name " for="capitalCityQ"/>
+                            <p:inputText id="capitalCityQ" value="#{countryController.capitalCityQ}"
+                                         required="true" requiredMessage="Capital City Name is required!"/>
+
+                            <p:outputLabel value="Country Minimum Total Area " for="minTotalAreaQ7"/>
+                            <p:inputNumber id="minTotalAreaQ7" value="#{countryController.minTotalAreaQ}"
+                                           decimalPlaces="0" thousandSeparator=","
+                                           required="true" requiredMessage="Minimum Total Area is required!"/>
+
+                            <p:outputLabel value="Country Maximum Total Area " for="maxTotalAreaQ7" />
+                            <p:inputNumber id="maxTotalAreaQ7" value="#{countryController.maxTotalAreaQ}"
+                                           decimalPlaces="0" thousandSeparator=","
+                                           required="true" requiredMessage="Maximum Total Area is required!"/>
+                        </p:panelGrid>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <br/><br/>
+                        <div align="center">
+                            <!-- SUBMIT button -->
+                            <p:commandButton value="Submit" icon="fas fa-arrow-up" styleClass="rounded-button"
+                                             ajax="false" action="#{countryController.search(7)}"/>
+                            &nbsp;
+                            <!-- CANCEL button -->
+                            <p:commandButton value="Cancel" icon="fas fa-ban" styleClass="ui-button-outlined"
+                                             onclick="PF('DBSearchDialog7').hide()"/>
+                        </div>
+                    </h:panelGroup>
+                </p:panel>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>
+</html>
